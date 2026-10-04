@@ -36,6 +36,55 @@ export class GitRepoResolver implements SourceResolver {
   }
 
   async resolve(source: string): Promise<SourceResult> {
+    let cloneUrl = source;
+    if (cloneUrl.startsWith("git+")) {
+      cloneUrl = cloneUrl.slice(4);
+    }
+
+    // Try fast tarball download for GitHub HTTPS URLs
+    if (cloneUrl.startsWith("https://github.com/") || cloneUrl.startsWith("http://github.com/")) {
+      try {
+        const url = new URL(cloneUrl);
+        const parts = url.pathname.split("/").filter(Boolean);
+        if (parts.length >= 2) {
+          const owner = parts[0];
+          const cleanRepo = parts[1].replace(/\.git$/, "");
+          const tarUrl = `https://codeload.github.com/${owner}/${cleanRepo}/tar.gz/HEAD`;
+
+          const res = await fetch(tarUrl, { headers: { "User-Agent": "skill-cli" } });
+          if (res.ok && res.body) {
+            const tempDir = await mkdtemp(join(tmpdir(), "skill-tar-"));
+            const tarFile = join(tempDir, "archive.tar.gz");
+            const buf = await res.arrayBuffer();
+            await Bun.write(tarFile, buf);
+
+            const proc = Bun.spawn(
+              ["tar", "-xzf", tarFile, "-C", tempDir, "--strip-components=1"],
+              { stdout: "ignore", stderr: "ignore" }
+            );
+            const code = await proc.exited;
+            await rm(tarFile, { force: true }).catch(() => {});
+
+            if (code === 0) {
+              return {
+                type: "directory",
+                tempDir,
+                cleanup: async () => {
+                  try {
+                    await rm(tempDir, { recursive: true, force: true });
+                  } catch {}
+                },
+              };
+            } else {
+              await rm(tempDir, { recursive: true, force: true }).catch(() => {});
+            }
+          }
+        }
+      } catch {
+        // Fallback to git clone
+      }
+    }
+
     const gitOk = await this.isGitAvailable();
     if (!gitOk) {
       throw new SourceError(
@@ -44,12 +93,7 @@ export class GitRepoResolver implements SourceResolver {
       );
     }
 
-    let cloneUrl = source;
-    if (cloneUrl.startsWith("git+")) {
-      cloneUrl = cloneUrl.slice(4);
-    }
-
-    const tempDir = await mkdtemp(join(tmpdir(), "skillx-git-"));
+    const tempDir = await mkdtemp(join(tmpdir(), "skill-git-"));
 
     let proc;
     let stderrPromise: Promise<string>;

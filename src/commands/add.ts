@@ -69,25 +69,34 @@ export async function runAdd(
       );
     }
 
+    // Deduplicate candidates by name (e.g. if monorepo contains test fixture copies)
+    const uniqueMap = new Map<string, typeof report.valid[0]>();
+    for (const c of report.valid) {
+      if (!uniqueMap.has(c.metadata.name)) {
+        uniqueMap.set(c.metadata.name, c);
+      }
+    }
+    const uniqueCandidates = Array.from(uniqueMap.values());
+
     let selectedCandidate;
 
     if (requestedSkill) {
-      selectedCandidate = report.valid.find(
+      selectedCandidate = uniqueCandidates.find(
         (c) => c.metadata.name === requestedSkill
       );
       if (!selectedCandidate) {
-        const available = report.valid.map((c) => c.metadata.name).join(", ");
+        const available = uniqueCandidates.map((c) => c.metadata.name).join(", ");
         throw new SourceError(
           "SKILL_NOT_FOUND",
           `skill '${requestedSkill}' specified with --skill was not found in source\n       available skills: ${available}`
         );
       }
     } else {
-      if (report.valid.length === 1) {
-        selectedCandidate = report.valid[0];
+      if (uniqueCandidates.length === 1) {
+        selectedCandidate = uniqueCandidates[0];
       } else {
-        const maxLen = Math.max(...report.valid.map((c) => c.metadata.name.length));
-        const formatted = report.valid
+        const maxLen = Math.max(...uniqueCandidates.map((c) => c.metadata.name.length));
+        const formatted = uniqueCandidates
           .map(
             (c) =>
               `    ${c.metadata.name.padEnd(maxLen + 4)}${c.metadata.description}`
@@ -95,7 +104,7 @@ export async function runAdd(
           .join("\n");
         throw new SourceError(
           "AMBIGUOUS_SKILL",
-          `source contains ${report.valid.length} skills; choose one with --skill <name>\n\n  available skills:\n${formatted}`
+          `source contains ${uniqueCandidates.length} skills; choose one with --skill <name>\n\n  available skills:\n${formatted}`
         );
       }
     }

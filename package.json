@@ -1,13 +1,14 @@
 {
-  "name": "skillx",
+  "name": "skillsh",
   "version": "0.1.0",
   "description": "The open standard Agent Skills CLI",
   "bin": {
-    "skillx": "./dist/skillx"
+    "skill": "./dist/skill",
+    "skillsh": "./dist/skill"
   },
   "scripts": {
     "dev": "bun run src/cli.ts",
-    "build": "bun build src/cli.ts --compile --outfile dist/skillx",
+    "build": "bun build src/cli.ts --compile --outfile dist/skill",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "test:unit": "bun test tests/unit",

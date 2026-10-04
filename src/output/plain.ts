@@ -144,7 +144,7 @@ export class PlainFormatter implements OutputFormatter {
     } else {
       console.log("no skills installed");
     }
-    console.log("run 'skillx add <source>' to install skills");
+    console.log("run 'skill add <source>' to install skills");
   }
 
   error(msg: string): void {

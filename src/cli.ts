@@ -16,16 +16,16 @@ const VERSION = packageJson.version || "0.1.0";
 
 function getMainHelp(): string {
   return formatHelp({
-    title: "skillx",
+    title: "skill",
     description: "The Open Standard Agent Skills CLI",
     version: VERSION,
     usage: [
-      `skillx ${c.cyan("add")} ${c.yellow("<source>")} ${c.dim("[--skill <name>] [--json]")}`,
-      `skillx ${c.cyan("remove")} ${c.yellow("<name>")} ${c.dim("[--json]")}`,
-      `skillx ${c.cyan("update")} ${c.yellow("[name]")} ${c.dim("[--json]")}`,
-      `skillx ${c.cyan("search")} ${c.yellow("<query>")} ${c.dim("[--json]")}`,
-      `skillx ${c.cyan("list")} ${c.dim("[--json]")}`,
-      `skillx ${c.cyan("version")} ${c.dim("[--json]")}`,
+      `skill ${c.cyan("add")} ${c.yellow("<source>")} ${c.dim("[--skill <name>] [--force] [--json]")}`,
+      `skill ${c.cyan("remove")} ${c.yellow("<name>")} ${c.dim("[--json]")}`,
+      `skill ${c.cyan("update")} ${c.yellow("[name]")} ${c.dim("[--json]")}`,
+      `skill ${c.cyan("search")} ${c.yellow("<query>")} ${c.dim("[--json]")}`,
+      `skill ${c.cyan("list")} ${c.dim("[--json]")}`,
+      `skill ${c.cyan("version")} ${c.dim("[--json]")}`,
     ],
     sections: [
       {
@@ -76,21 +76,21 @@ function getMainHelp(): string {
       },
     ],
     examples: [
-      `skillx add ${c.yellow("vercel-labs/skills")}`,
-      `skillx add ${c.yellow("https://github.com/example/skills.git")} --skill ${c.cyan("code-review")}`,
-      `skillx update ${c.cyan("code-review")}`,
-      `skillx remove ${c.cyan("code-review")}`,
-      `skillx search ${c.yellow('"code review"')}`,
-      "skillx list",
+      `skill add ${c.yellow("vercel-labs/skills")}`,
+      `skill add ${c.yellow("https://github.com/example/skills.git")} --skill ${c.cyan("code-review")}`,
+      `skill update ${c.cyan("code-review")}`,
+      `skill remove ${c.cyan("code-review")}`,
+      `skill search ${c.yellow('"code review"')}`,
+      "skill list",
     ],
   });
 }
 
 function getRemoveHelp(): string {
   return formatHelp({
-    title: "skillx remove",
+    title: "skill remove",
     description: "Remove an installed skill",
-    usage: [`skillx remove ${c.yellow("<name>")} ${c.dim("[--json]")}`],
+    usage: [`skill remove ${c.yellow("<name>")} ${c.dim("[--json]")}`],
     sections: [
       {
         title: "Arguments:",
@@ -120,9 +120,9 @@ function getRemoveHelp(): string {
 
 function getUpdateHelp(): string {
   return formatHelp({
-    title: "skillx update",
+    title: "skill update",
     description: "Update installed skills from their original source",
-    usage: [`skillx update ${c.yellow("[name]")} ${c.dim("[--json]")}`],
+    usage: [`skill update ${c.yellow("[name]")} ${c.dim("[--json]")}`],
     sections: [
       {
         title: "Arguments:",
@@ -152,9 +152,9 @@ function getUpdateHelp(): string {
 
 function getAddHelp(): string {
   return formatHelp({
-    title: "skillx add",
+    title: "skill add",
     description: "Acquire and install an Agent Skill",
-    usage: [`skillx add ${c.yellow("<source>")} ${c.dim("[--skill <name>] [--force] [--json]")}`],
+    usage: [`skill add ${c.yellow("<source>")} ${c.dim("[--skill <name>] [--force] [--json]")}`],
     sections: [
       {
         title: "Arguments:",
@@ -193,9 +193,9 @@ function getAddHelp(): string {
 
 function getSearchHelp(): string {
   return formatHelp({
-    title: "skillx search",
+    title: "skill search",
     description: "Search locally installed skills",
-    usage: [`skillx search ${c.yellow("<query>")} ${c.dim("[--json]")}`],
+    usage: [`skill search ${c.yellow("<query>")} ${c.dim("[--json]")}`],
     sections: [
       {
         title: "Arguments:",
@@ -225,9 +225,9 @@ function getSearchHelp(): string {
 
 function getListHelp(): string {
   return formatHelp({
-    title: "skillx list",
+    title: "skill list",
     description: "List all locally installed skills",
-    usage: [`skillx list ${c.dim("[--json]")}`],
+    usage: [`skill list ${c.dim("[--json]")}`],
     sections: [
       {
         title: "Options:",
@@ -297,7 +297,7 @@ export async function main(args: string[] = process.argv.slice(2)): Promise<numb
   }
 
   if (filteredArgs.includes("-v") || filteredArgs.includes("--version")) {
-    console.log(`skillx v${VERSION}`);
+    console.log(`skill v${VERSION}`);
     return 0;
   }
 
@@ -430,7 +430,7 @@ export async function main(args: string[] = process.argv.slice(2)): Promise<numb
         if (isJson) {
           console.log(JSON.stringify({ version: VERSION }, null, 2));
         } else {
-          console.log(`skillx v${VERSION}`);
+          console.log(`skill v${VERSION}`);
         }
         return 0;
       }

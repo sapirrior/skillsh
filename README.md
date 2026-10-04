@@ -1,8 +1,8 @@
-# skillx
+# skill
 
 The open-standard, protocol-first CLI for acquiring, validating, and locally discovering **Agent Skills**.
 
-`skillx` is designed to be the de-facto standard tool for the Agent Skills ecosystem — in the same way `curl` is the de-facto standard for HTTP. It is fast, lightweight, strictly standards-compliant, and runs with zero external runtime dependencies.
+`skill` is designed to be the de-facto standard tool for the Agent Skills ecosystem — in the same way `curl` is the de-facto standard for HTTP. It is fast, lightweight, strictly standards-compliant, and runs with zero external runtime dependencies.
 
 ---
 
@@ -20,26 +20,32 @@ The open-standard, protocol-first CLI for acquiring, validating, and locally dis
 
 ## Quickstart
 
-### Installation
-
-Compile and install the single standalone binary:
+### Using `npx` (Package: `skillsh`)
 
 ```bash
-# Clone the repository
-git clone https://github.com/sapirrior/skillx.git
-cd skillx
+# Run directly with npx
+npx skillsh add vercel-labs/skills --skill pr-labeling
+npx skillsh list
+```
 
+### Global Installation
+
+```bash
+# Install globally via npm/bun
+npm install -g skillsh
+
+# Now available everywhere as `skill`
+skill list
+```
+
+### Building Single-File Standalone Binary
+
+```bash
 # Build compiled binary
 bun run build
 
-# (Optional) Move to your PATH
-mv dist/skillx ~/.local/bin/
-```
-
-Or run directly using Bun:
-
-```bash
-bun run src/cli.ts <command>
+# Move to your PATH
+mv dist/skill ~/.local/bin/
 ```
 
 ---
@@ -52,19 +58,19 @@ Acquire and install an Agent Skill from GitHub shorthand, a Git repository, or a
 
 ```bash
 # GitHub shorthand (owner/repo)
-skillx add vercel-labs/skills
+skill add vercel-labs/skills
 
 # Specific skill from a multi-skill repository
-skillx add vercel-labs/skills --skill pr-labeling
+skill add vercel-labs/skills --skill pr-labeling
 
 # Git repository URL
-skillx add https://github.com/example/skills.git
+skill add https://github.com/example/skills.git
 
 # Direct HTTPS SKILL.md URL
-skillx add https://raw.githubusercontent.com/example/skills/main/code-review/SKILL.md
+skill add https://raw.githubusercontent.com/example/skills/main/code-review/SKILL.md
 
 # Overwrite existing skill without interactive prompt
-skillx add vercel-labs/skills --skill pr-labeling --force
+skill add vercel-labs/skills --skill pr-labeling --force
 ```
 
 ### 2. List Installed Skills
@@ -72,13 +78,13 @@ skillx add vercel-labs/skills --skill pr-labeling --force
 Display all locally installed skills recorded in the local catalog:
 
 ```bash
-skillx list
+skill list
 ```
 
 Emit machine-readable JSON:
 
 ```bash
-skillx list --json
+skill list --json
 ```
 
 ### 3. Search Local Skills
@@ -86,8 +92,8 @@ skillx list --json
 Perform fast, deterministic local search against skill names and descriptions:
 
 ```bash
-skillx search "code review"
-skillx search rust --json
+skill search "code review"
+skill search rust --json
 ```
 
 ### 4. Update Skills
@@ -96,10 +102,10 @@ Re-acquire and update skills from their original acquisition source:
 
 ```bash
 # Update a specific skill
-skillx update pr-labeling
+skill update pr-labeling
 
 # Update all installed skills
-skillx update
+skill update
 ```
 
 ### 5. Remove a Skill
@@ -107,7 +113,7 @@ skillx update
 Uninstall a skill and remove its entry from the local catalog:
 
 ```bash
-skillx remove pr-labeling
+skill remove pr-labeling
 ```
 
 ---
@@ -116,13 +122,13 @@ skillx remove pr-labeling
 
 | Command | Description |
 |---|---|
-| `skillx add <source>` | Acquire and install an Agent Skill (`--skill`, `--force`, `--json`) |
-| `skillx remove <name>` | Remove an installed skill and its catalog entry (`--json`) |
-| `skillx update [name]` | Update an installed skill or all skills from original source (`--json`) |
-| `skillx search <query>` | Search locally installed skills with deterministic ranking (`--json`) |
-| `skillx list` | List all locally installed skills (`--json`) |
-| `skillx version` | Show CLI version (`--json`) |
-| `skillx help [command]` | Display detailed help menu |
+| `skill add <source>` | Acquire and install an Agent Skill (`--skill`, `--force`, `--json`) |
+| `skill remove <name>` | Remove an installed skill and its catalog entry (`--json`) |
+| `skill update [name]` | Update an installed skill or all skills from original source (`--json`) |
+| `skill search <query>` | Search locally installed skills with deterministic ranking (`--json`) |
+| `skill list` | List all locally installed skills (`--json`) |
+| `skill version` | Show CLI version (`--json`) |
+| `skill help [command]` | Display detailed help menu |
 
 ---
 
@@ -130,10 +136,10 @@ skillx remove pr-labeling
 
 ### File System Layout
 
-`skillx` only creates and manages two locations:
+`skill` creates and manages only two locations:
 
 1. **`~/.agents/skills/<skill-name>/`**:  
-   The complete, unmodified skill package (including `SKILL.md`, `scripts/`, `references/`, `assets/`). An agent never needs `skillx` to execute installed skills.
+   The complete, unmodified skill package (including `SKILL.md`, `scripts/`, `references/`, `assets/`). An agent never needs `skill` to execute installed skills.
 2. **`~/.skillx/skill.lock`**:  
    A clean JSON catalog recording the local installation metadata:
    ```json
@@ -156,13 +162,11 @@ skillx remove pr-labeling
 - **Atomic Transactions**: Installation copies to a temporary directory first and atomically replaces the target only on success.
 - **Rollback on Error**: If any step fails during install or catalog persistence, newly created directories are cleaned up immediately.
 - **No Path Traversal**: Symlinks escaping skill roots and relative directory traversal attacks are rejected.
-- **No Execution**: Installing a skill never executes shell scripts, Python, or binaries.
+- **No Code Execution**: Installing a skill never executes shell scripts, Python, or binaries during acquisition.
 
 ---
 
 ## Development & Testing
-
-Run the full offline test suite:
 
 ```bash
 # Run all tests
@@ -171,7 +175,7 @@ bun test
 # Typecheck
 bun run typecheck
 
-# Compile binary
+# Compile binary (outputs to dist/skill)
 bun run build
 ```
 
