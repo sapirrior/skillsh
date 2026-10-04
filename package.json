@@ -1,0 +1,22 @@
+{
+  "name": "skillx",
+  "version": "0.1.0",
+  "description": "The open standard Agent Skills CLI",
+  "bin": {
+    "skillx": "./dist/skillx"
+  },
+  "scripts": {
+    "dev": "bun run src/cli.ts",
+    "build": "bun build src/cli.ts --compile --outfile dist/skillx",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:unit": "bun test tests/unit",
+    "test:e2e": "bun test tests/e2e",
+    "lint": "tsc --noEmit && echo 'ok'"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0"
+  }
+}
